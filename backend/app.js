@@ -1,6 +1,15 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
+const Book = require('./models/Book')
 
 const app = express();
+
+mongoose.connect('mongodb+srv://kevin:cl7k7o3k11kw4and@cluster.6i13uh5.mongodb.net/?retryWrites=true&w=majority',
+  { useNewUrlParser: true,
+    useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 app.use(express.json());
 
@@ -12,30 +21,37 @@ app.use((req, res, next) => {
   });
 
 app.post('/api/books', (req, res, next) => {
-    console.log(req.body);
-    res.status(201).json({ message: 'Livre ajouté'})
-    next();
+    delete req.body._id;
+   const book = new Book({
+    ...req.body
+   });
+   book.save()
+    .then(() => res.status(201).json({ message: "Livre enregistré !"}))
+    .catch(error => res.status(400).json({ error }));
+});
+
+app.put('/api/books/:id', (req, res, next) => {
+  Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
+    .then(() => res.status(200).json({ message: "Livre modifié !"}))
+    .catch(error => res.status(400).json({ error }));
+});
+
+app.delete('/api/books/:id', (req, res, next) => {
+  Book.deleteOne({ _id: req.params.id })
+    .then(() => res.status(200).json({ message: "Livre supprimé !"}))
+    .catch(error => res.status(400).json({ error }));
+});
+
+app.get('/api/books/:id', (req, res, next) => {
+    Book.findOne({ _id: req.params.id })
+        .then(book => res.status(200).json(book))
+        .catch(error => res.status(404).json({ error }));
 });
 
 app.get('/api/books', (req, res, next) => {
-    const books = [
-        {
-            userId: 'jpozeo69g',
-            title: 'Your soul is a river',
-            author: 'Nikita Gill',
-            imageUrl: 'https://images.unsplash.com/photo-1511108690759-009324a90311?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80',
-            year: 5,
-            genre: 'Fantastique',
-            ratings: [
-                {
-                    userId: 'jpozeo69g',
-                    grade: 3,
-                },
-            ],
-            averageRating: 3
-        }
-    ]
-    res.status(200).json(books)
-})
+   Book.find()
+    .then(books => res.status(200).json(books))
+    .catch(error => res.status(400).json({ error }));
+});
 
 module.exports = app;
