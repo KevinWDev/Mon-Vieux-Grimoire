@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const mongoose = require('mongoose');
 
 const bookRoutes = require('./routes/book')
@@ -6,6 +7,9 @@ const userRoutes = require('./routes/user')
 const path = require('path');
 
 const app = express();
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}))
 
 mongoose.connect('mongodb+srv://kevin:cl7k7o3k11kw4and@cluster.6i13uh5.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
