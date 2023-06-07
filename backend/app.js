@@ -2,6 +2,9 @@ const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
 
+require('dotenv').config();
+const mongodb = process.env.MONGO_DB_SECRET_MP
+
 const bookRoutes = require('./routes/book')
 const userRoutes = require('./routes/user')
 const path = require('path');
@@ -11,7 +14,7 @@ app.use(helmet({
   crossOriginResourcePolicy: false,
 }))
 
-mongoose.connect('mongodb+srv://kevin:cl7k7o3k11kw4and@cluster.6i13uh5.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(`mongodb+srv://${mongodb}@cluster.6i13uh5.mongodb.net/?retryWrites=true&w=majority`,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
