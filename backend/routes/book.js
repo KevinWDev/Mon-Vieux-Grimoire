@@ -10,7 +10,7 @@ const compressImage = require('../middleware/imageCompression')
 
 router.post('/', auth, multer, compressImage, bookCtrl.createBook);
 router.post('/:id/rating', auth, bookCtrl.averageRating)
-router.put('/:id', auth, multer, bookCtrl.modifyBook);
+router.put('/:id', auth, multer, compressImage, bookCtrl.modifyBook);
 router.delete('/:id', auth, bookCtrl.deleteBook);
 router.get('/bestrating', bookCtrl.bestratingBook)
 router.get('/:id', bookCtrl.getOneBook);
