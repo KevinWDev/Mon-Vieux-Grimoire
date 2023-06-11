@@ -7,6 +7,16 @@ require('dotenv').config();
 const SECRET_TOKEN = process.env.SECRET_TOKEN;
 
 exports.signup = (req, res, next) => {
+
+    const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/;
+    const password  = req.body.password;
+
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({ 
+            message: 'Le mot de passe doit contenir au moins 8 caratères, une lettre minuscule, une lettre majuscule et un chiffre'
+        })
+    };
+
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User({
